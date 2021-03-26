@@ -1,6 +1,5 @@
 package main
 
-//TODO: Give each file a unique name so you can run the script multiple times without duplicates.
 //TODO: Do the http requests concurrently.
 import (
 	"context"
@@ -9,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/painhardcore/go-reddit"
 )
@@ -23,10 +23,10 @@ func main() {
 	}
 	fmt.Println("Retrieved top 5 links.")
 
-	for i, link := range links[0:5] {
+	for _, link := range links[0:5] {
 		//Send a get request to each URL.
 		url := link.URL
-		fileExt := url[len(url)-3 : len(url)-0]
+		split := strings.Split(url, "/")
 		resp, err := http.Get(url)
 		if err != nil {
 			log.Fatal("HTTP error: ", err)
@@ -34,10 +34,11 @@ func main() {
 		defer resp.Body.Close()
 
 		//Copy the http response into a new file.
-		fileName := "wallpaper" + fmt.Sprint(i) + "." + fileExt
+		fileName := split[len(split)-1]
+		fmt.Println(split[len(split)-1])
 		out, outErr := os.Create(fileName)
 		if outErr != nil {
-			log.Fatal("Error creatging file: ", outErr)
+			log.Fatal("Error creating file: ", outErr)
 		}
 		defer out.Close()
 		b, copyerr := io.Copy(out, resp.Body)

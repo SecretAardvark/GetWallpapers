@@ -8,7 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
+	"path"
 
 	"github.com/painhardcore/go-reddit"
 )
@@ -26,7 +26,6 @@ func main() {
 	for _, link := range links[0:5] {
 		//Send a get request to each URL.
 		url := link.URL
-		split := strings.Split(url, "/")
 		resp, err := http.Get(url)
 		if err != nil {
 			log.Fatal("HTTP error: ", err)
@@ -34,8 +33,8 @@ func main() {
 		defer resp.Body.Close()
 
 		//Copy the http response into a new file.
-		fileName := split[len(split)-1]
-		fmt.Println(split[len(split)-1])
+		fileName := path.Base(url)
+		fmt.Println(path.Base(url))
 		out, outErr := os.Create(fileName)
 		if outErr != nil {
 			log.Fatal("Error creating file: ", outErr)
